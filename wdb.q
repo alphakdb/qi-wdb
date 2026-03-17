@@ -3,8 +3,8 @@
 .qi.import`cron
 
 KOE:any`keeponexit`koe in key .qi.opts
-gettmppath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/tmp"];"wdb_",string[.z.i],"_",.qi.tostr[x]except".")}
-getsymenumpath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/tmp"];"symenum_",string[.z.i],"_",.qi.tostr[x]except".")}
+gettmppath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/",string[.proc.self.stackname],"/tmp"];"wdb_",string[.z.i],"_",.qi.tostr[x]except".")}
+getsymenumpath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/",string[.proc.self.stackname],"/tmp"];"symenum_",string[.z.i],"_",.qi.tostr[x]except".")}
 writetmp:{.[.qi.path(TMPPATH;x;`);();,;.Q.en[SYMENUMPATH]`. x]}
 clearall:{@[`.;tables`;0#]}
 writeandclear:{writetmp each t:a where 0<(count get@)each a:tables`;clearall`;.qi.info"flushed ",string[count t]," table(s) to disk"}
@@ -46,8 +46,7 @@ disksort:{[t;c;a]
     .qi.os.ensuredir p:.qi.path(.wdb.hdb_dir;x);
     .qi.os.mv[.qi.ospath(TMPPATH;"*");p];
     / clean up empty tmp dirs and roll globals for new day
-    hdel TMPPATH;   / @Ian
-    hdel SYMENUMPATH;
+    hdel each (TMPPATH;SYMENUMPATH);
     TMPPATH::gettmppath .z.d;
     SYMENUMPATH::getsymenumpath .z.d;
     initsymenum[];
@@ -73,7 +72,7 @@ initsymenum:{
     .wdb.hdb_dir:.qi.path(.conf.DATA;.proc.self.stackname;`hdb;.wdb.hdb);
     TMPPATH::gettmppath .z.d;
     SYMENUMPATH::getsymenumpath .z.d;
-    SYMBACKUPDIR::.qi.getconf[`symBackupDir;.conf.DATA,"/symbackups"];
+    SYMBACKUPDIR::.qi.getconf[`symBackupDir;.conf.DATA,"/",string[.proc.self.stackname],"/symbackups"];
     if[null .proc.self.mystack[.wdb.hdb;`pkg];show .proc.self.mystack;'string[.wdb.hdb]," not found"];
     initsymenum[];
     .proc.subinitreplay[];
