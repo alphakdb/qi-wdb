@@ -3,8 +3,8 @@
 .qi.import`cron
 
 KOE:any`keeponexit`koe in key .qi.opts
-gettmppath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/",string[.proc.self.stackname],"/tmp"];"wdb_",string[.z.i],"_",.qi.tostr[x]except".")}
-getsymenumpath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/",string[.proc.self.stackname],"/tmp"];"symenum_",string[.z.i],"_",.qi.tostr[x]except".")}
+gettmppath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/",string[.proc.self.stackname],"/tmp"];"wdb_",.qi.tostr[x]except".")}
+getsymenumpath:{.qi.path(.qi.getconf[`tmpPath;.conf.DATA,"/",string[.proc.self.stackname],"/tmp"];"symenum_",.qi.tostr[x]except".")}
 writetmp:{.[.qi.path(TMPPATH;x;`);();,;.Q.en[SYMENUMPATH]`. x]}
 clearall:{@[`.;tables`;0#]}
 writeandclear:{writetmp each t:a where 0<(count get@)each a:tables`;clearall`;.qi.info"flushed ",string[count t]," table(s) to disk"}
@@ -74,6 +74,7 @@ initsymenum:{
     SYMENUMPATH::getsymenumpath .z.d;
     SYMBACKUPDIR::.qi.getconf[`symBackupDir;.conf.DATA,"/",string[.proc.self.stackname],"/symbackups"];
     if[null .proc.self.mystack[.wdb.hdb;`pkg];show .proc.self.mystack;'string[.wdb.hdb]," not found"];
+    if[.qi.exists TMPPATH;.qi.deldir each(TMPPATH;SYMENUMPATH)];
     initsymenum[];
     .proc.subinitreplay[];
     .cron.add[`writeall;.z.p;.conf.WRITE_EVERY];
